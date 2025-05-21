@@ -1,0 +1,6 @@
+Django==4.2.5
+djangorestframework==3.14.0
+django-cors-headers==4.2.0
+drf-yasg==1.21.7
+django-filter==23.2
+Pillow==10.0.0
