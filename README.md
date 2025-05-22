@@ -177,4 +177,5 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo LICENSE para d
 
 ---
 
-Feito com ❤️ pela Sua Equipe de Desenvolvimento
+Feito com ❤️ por JP
+
