@@ -5,7 +5,8 @@ import {
   ArrowUpRight, 
   CreditCard, 
   ShoppingCart, 
-  Wallet 
+  Wallet,
+  RefreshCw
 } from "lucide-react"
 import { cn, formatCurrency } from "@/lib/utils"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -25,23 +26,28 @@ interface Transaction {
 
 interface RecentTransactionsProps {
   transactions: Transaction[]
+  isLoading?: boolean
 }
 
-export function RecentTransactions({ transactions = [] }: RecentTransactionsProps) {
+export function RecentTransactions({ 
+  transactions = [], 
+  isLoading = false 
+}: RecentTransactionsProps) {
   // Get icon based on category name
   const getCategoryIcon = (transaction: Transaction) => {
     const categoryName = transaction.category_name?.toLowerCase() || ""
     
     if (transaction.type === "incoming") {
       return Wallet
-    } else if (categoryName.includes("food") || categoryName.includes("grocery")) {
+    } else if (categoryName.includes("food") || categoryName.includes("grocery") || 
+               categoryName.includes("alimentação") || categoryName.includes("mercado")) {
       return ShoppingCart
     } else {
       return CreditCard
     }
   }
 
-  // Format date for display
+  // Format date for display in Portuguese
   const formatDate = (dateString?: string) => {
     if (!dateString) return ""
     
@@ -51,12 +57,34 @@ export function RecentTransactions({ transactions = [] }: RecentTransactionsProp
     yesterday.setDate(yesterday.getDate() - 1)
     
     if (date.toDateString() === today.toDateString()) {
-      return "Today"
+      return "Hoje"
     } else if (date.toDateString() === yesterday.toDateString()) {
-      return "Yesterday"
+      return "Ontem"
     } else {
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      // Formato de data em português: 12 mai, 15 jun, etc.
+      const monthNames = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
+      return `${date.getDate()} ${monthNames[date.getMonth()]}`
     }
+  }
+
+  // Traduzir status das transações
+  const translateStatus = (status: string) => {
+    switch(status) {
+      case 'pending': return 'pendente';
+      case 'failed': return 'falhou';
+      case 'completed': return 'concluída';
+      default: return status;
+    }
+  }
+
+  // Se estiver carregando, mostrar indicador
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[350px]">
+        <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground mb-2" />
+        <p className="text-sm text-muted-foreground">Carregando transações...</p>
+      </div>
+    )
   }
 
   return (
@@ -64,7 +92,7 @@ export function RecentTransactions({ transactions = [] }: RecentTransactionsProp
       <div className="space-y-1">
         {transactions.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
-            No recent transactions found
+            Nenhuma transação recente encontrada
           </div>
         ) : (
           transactions.map((transaction) => {
@@ -105,7 +133,7 @@ export function RecentTransactions({ transactions = [] }: RecentTransactionsProp
                               : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
                           )}
                         >
-                          {transaction.status}
+                          {translateStatus(transaction.status)}
                         </Badge>
                       )}
                     </div>
