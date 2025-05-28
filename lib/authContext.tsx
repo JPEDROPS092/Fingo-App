@@ -16,6 +16,7 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<any>;
   logout: () => void;
   isAuthenticated: boolean;
+  refreshToken: () => Promise<boolean>;
 }
 
 // Default context value
@@ -25,6 +26,7 @@ const AuthContext = createContext<AuthContextType>({
   login: async () => ({}),
   logout: () => {},
   isAuthenticated: false,
+  refreshToken: async () => false,
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -38,7 +40,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       return localStorage.getItem(key);
     } catch (error) {
-      console.error(`Error accessing localStorage for key ${key}:`, error);
+      console.error(`Erro ao acessar localStorage para chave ${key}:`, error);
       return null;
     }
   };
@@ -50,7 +52,44 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem(key, value);
       return true;
     } catch (error) {
-      console.error(`Error writing to localStorage for key ${key}:`, error);
+      console.error(`Erro ao escrever no localStorage para chave ${key}:`, error);
+      return false;
+    }
+  };
+  
+  // Token refresh function
+  const refreshToken = async (): Promise<boolean> => {
+    try {
+      const token = getFromStorage('financeAppToken');
+      if (!token) {
+        return false;
+      }
+      
+      // Validar token e obter dados atualizados do usuário
+      const response = await authService.validateToken();
+      
+      if (response && response.data) {
+        // Atualizar informações do usuário no storage
+        setToStorage('financeAppUser', JSON.stringify({
+          id: response.data.id,
+          username: response.data.username,
+          email: response.data.email
+        }));
+        
+        // Atualizar estado do usuário
+        setUser({
+          id: response.data.id,
+          username: response.data.username,
+          email: response.data.email
+        });
+        
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Erro ao atualizar token:', error);
+      logout();
       return false;
     }
   };
@@ -68,21 +107,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         if (userJson && token) {
           try {
+            // Parse user data
             const userData = JSON.parse(userJson);
             setUser({
               id: userData.id,
               username: userData.username,
               email: userData.email
             });
+            
+            // Validar token com o backend
+            refreshToken().catch(err => {
+              console.error('Erro na validação inicial do token:', err);
+            });
           } catch (parseError) {
-            console.error('Error parsing user data:', parseError);
+            console.error('Erro ao analisar dados do usuário:', parseError);
             setUser(null);
           }
         } else {
           setUser(null);
         }
       } catch (error) {
-        console.error('Auth check error:', error);
+        console.error('Erro na verificação de autenticação:', error);
         setUser(null);
       } finally {
         setLoading(false);
@@ -90,6 +135,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     checkAuth();
+    
+    // Configurar intervalo para renovar o token periodicamente (a cada 15 minutos)
+    const tokenRefreshInterval = setInterval(() => {
+      if (getFromStorage('financeAppToken')) {
+        refreshToken().catch(err => {
+          console.error('Erro ao atualizar token:', err);
+        });
+      }
+    }, 15 * 60 * 1000);
+    
+    // Limpar intervalo quando o componente for desmontado
+    return () => clearInterval(tokenRefreshInterval);
   }, []);
 
   const login = async (username: string, password: string) => {
@@ -101,20 +158,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           username: data.username,
           email: data.email
         });
-        console.log('Login successful');
+        console.log('Login bem-sucedido');
         return data;
       } else {
-        throw new Error('Login failed: Invalid response from server');
+        throw new Error('Login falhou: Resposta inválida do servidor');
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('Erro de login:', error);
       throw error;
     }
   };
 
   const logout = () => {
     try {
-      console.log('Logging out user...');
+      console.log('Desconectando usuário...');
       // Use our safe wrapper instead of directly calling authService
       if (typeof window !== 'undefined') {
         localStorage.removeItem('financeAppToken');
@@ -129,7 +186,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
       setUser(null);
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error('Erro ao desconectar:', error);
       router.replace('/login');
     }
   };
@@ -142,6 +199,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         login,
         logout,
         isAuthenticated: !!user,
+        refreshToken,
       }}
     >
       {children}

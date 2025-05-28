@@ -44,50 +44,111 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Handle authentication errors
-    if (error.response && error.response.status === 401) {
-      console.error('Authentication error, redirecting to login');
-      // Clear auth data
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('financeAppToken');
-        localStorage.removeItem('financeAppUser');
-        // Redirect to login page
-        window.location.href = '/login';
+    // Tratar erros de autenticação
+    if (error.response) {
+      const status = error.response.status;
+      
+      // Erro de autenticação (401) ou autorização (403)
+      if (status === 401) {
+        console.error('Erro de autenticação, redirecionando para login');
+        
+        // Limpar dados de autenticação
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('financeAppToken');
+          localStorage.removeItem('financeAppUser');
+          // Redirecionar para página de login
+          window.location.href = '/login';
+        }
+      } 
+      else if (status === 403) {
+        console.error('Acesso negado');
+        // Tratar erros de permissão
       }
+      else if (status === 500) {
+        console.error('Erro interno do servidor');
+        // Mostrar mensagem amigável para o usuário
+      }
+      
+      // Extrair mensagem de erro da resposta
+      let errorMessage = 'Ocorreu um erro na solicitação';
+      
+      if (error.response.data) {
+        if (typeof error.response.data === 'string') {
+          errorMessage = error.response.data;
+        } 
+        else if (error.response.data.detail) {
+          errorMessage = error.response.data.detail;
+        }
+        else if (error.response.data.message) {
+          errorMessage = error.response.data.message;
+        }
+        else if (error.response.data.non_field_errors) {
+          errorMessage = error.response.data.non_field_errors.join(', ');
+        }
+      }
+      
+      // Adicionar informações de erro ao objeto de erro
+      error.userMessage = errorMessage;
+    } 
+    else if (error.request) {
+      // Requisição feita, mas não recebeu resposta
+      error.userMessage = 'O servidor não respondeu. Verifique sua conexão.';
+      console.error('Sem resposta do servidor:', error.request);
+    } 
+    else {
+      // Algo aconteceu ao configurar a requisição
+      error.userMessage = 'Erro ao fazer a solicitação.';
+      console.error('Erro de requisição:', error.message);
     }
+    
     return Promise.reject(error);
   }
 );
+
+// Formatador de resposta comum para todos os serviços
+const formatResponse = (promise) => {
+  return promise
+    .then(response => ({ 
+      data: response.data, 
+      success: true, 
+      error: null 
+    }))
+    .catch(error => ({
+      data: null,
+      success: false,
+      error: error.userMessage || 'Erro desconhecido'
+    }));
+};
 
 // Auth Service
 const authService = {
   login: async (username: string, password: string) => {
     try {
-      console.log('Attempting login for:', username);
+      console.log('Tentando login para:', username);
       const response = await api.post('/users/login/', { username, password });
       
       if (response.data && response.data.token) {
-        console.log('Login successful, setting token');
-        // Store token in localStorage
+        console.log('Login bem-sucedido, configurando token');
+        // Armazenar token no localStorage
         localStorage.setItem('financeAppToken', response.data.token);
         
-        // Store user info
+        // Armazenar informações do usuário
         localStorage.setItem('financeAppUser', JSON.stringify({
           username: response.data.username,
           id: response.data.user_id,
           email: response.data.email
         }));
         
-        // Update Authorization header for future requests
+        // Atualizar cabeçalho Authorization para requisições futuras
         api.defaults.headers.common['Authorization'] = `Token ${response.data.token}`;
         
         return response.data;
       } else {
-        console.error('Login response missing token:', response.data);
-        throw new Error('Invalid login response');
+        console.error('Resposta de login sem token:', response.data);
+        throw new Error('Resposta de login inválida');
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('Erro de login:', error);
       throw error;
     }
   },
@@ -152,8 +213,8 @@ const authService = {
     try {
       return await api.get('/users/me/');
     } catch (error) {
-      console.error('Token validation failed:', error);
-      // Clear invalid token
+      console.error('Validação de token falhou:', error);
+      // Limpar token inválido
       if (typeof window !== 'undefined') {
         localStorage.removeItem('financeAppToken');
         localStorage.removeItem('financeAppUser');
@@ -165,37 +226,23 @@ const authService = {
 
 // Accounts Service
 const accountsService = {
-  getAll: async () => {
-    return await api.get('/accounts/');
-  },
+  getAll: async () => formatResponse(api.get('/accounts/')),
   
-  getById: async (id: string) => {
-    return await api.get(`/accounts/${id}/`);
-  },
+  getById: async (id: string) => formatResponse(api.get(`/accounts/${id}/`)),
   
-  create: async (accountData: any) => {
-    return await api.post('/accounts/', accountData);
-  },
+  create: async (accountData: any) => formatResponse(api.post('/accounts/', accountData)),
   
-  update: async (id: string, accountData: any) => {
-    return await api.put(`/accounts/${id}/`, accountData);
-  },
+  update: async (id: string, accountData: any) => formatResponse(api.put(`/accounts/${id}/`, accountData)),
   
-  delete: async (id: string) => {
-    return await api.delete(`/accounts/${id}/`);
-  },
+  delete: async (id: string) => formatResponse(api.delete(`/accounts/${id}/`)),
   
-  deposit: async (id: string, amount: number) => {
-    return await api.post(`/accounts/${id}/deposit/`, { amount });
-  },
+  deposit: async (id: string, amount: number) => formatResponse(api.post(`/accounts/${id}/deposit/`, { amount })),
   
-  withdraw: async (id: string, amount: number) => {
-    return await api.post(`/accounts/${id}/withdraw/`, { amount });
-  },
+  withdraw: async (id: string, amount: number) => formatResponse(api.post(`/accounts/${id}/withdraw/`, { amount })),
   
-  getTotalBalance: async () => {
-    return await api.get('/accounts/total_balance/');
-  }
+  getTotalBalance: async () => formatResponse(api.get('/accounts/total_balance/')),
+  
+  getStats: async () => formatResponse(api.get('/accounts/stats/'))
 };
 
 // Transactions Service
