@@ -61,6 +61,22 @@ class LoginView(APIView):
             "message": "Login successful"
         })
 
+class LogoutView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def post(self, request):
+        try:
+            # Delete the user's token to logout
+            request.user.auth_token.delete()
+            return Response({
+                "message": "Successfully logged out"
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({
+                "error": "Error logging out"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
 class UserDetailView(generics.RetrieveUpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserSerializer

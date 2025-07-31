@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-d6glnlf@br=a&-6@8#$#^0#^#1sp#j&ktj=mk2_d_(tg^w0z7#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '*']
 
 
 # Application definition
@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "transactions",
     "goals",
     "organizations",
+    "dashboard",
 ]
 
 MIDDLEWARE = [
@@ -145,6 +146,18 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 # REST Framework settings
 REST_FRAMEWORK = {

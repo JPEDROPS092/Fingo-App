@@ -48,6 +48,7 @@ urlpatterns = [
     path('api/goals/', include('goals.urls')),
     path('api/users/', include('users.urls')),
     path('api/organizations/', include('organizations.urls')),
+    path('api/dashboard/', include('dashboard.urls')),
     
     # Authentication
     path('api/auth/', include('rest_framework.urls')),
