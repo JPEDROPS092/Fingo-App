@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "my-mcp-server-af440641": {
+      "url": "https://gitmcp.io/JPEDROPS092/Fingo-App",
+      "type": "http"
+    }
+  },
+  "inputs": []
+}
