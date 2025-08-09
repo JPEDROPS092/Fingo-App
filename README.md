@@ -22,60 +22,79 @@ Uma aplicação completa de gestão financeira com um elegante frontend em React
 
 ### 📋 Pré-requisitos
 
-- Python 3.10+ 
-- Node.js 18+
-- npm ou yarn
+- Docker e Docker Compose
+- Git
 
-### 🔧 Instalação
+### 🔧 Opções de Instalação
 
-#### Configuração do Backend
+#### 🐳 Opção 1: Docker (Recomendado para Desenvolvimento)
 
-1. **Navegue até o diretório do backend**
+1. **Clone o repositório**
+
+```bash
+git clone <your-repo-url>
+cd Fingo-App
+```
+
+2. **Inicie o ambiente de desenvolvimento**
+
+```bash
+./dev-start.sh
+# ou
+make dev-start
+```
+
+3. **Acesse a aplicação**
+
+- Frontend: http://localhost:3000
+- Backend: http://localhost:8000
+- Admin: http://localhost:8000/admin (admin/admin123)
+
+#### 🏠 Opção 2: Instalação Local
+
+1. **Configuração do Backend**
 
 ```bash
 cd backend
-```
-
-2. **Instale as dependências Python**
-
-```bash
 pip install -r requirements.txt
-```
-
-3. **Execute as migrações do banco de dados**
-
-```bash
 python manage.py migrate
-```
-
-4. **Crie um superusuário (admin)**
-O superusuário já está criado com:
-- Usuário: `admin`
-- Senha: `admin123`
-
-5. **Inicie o servidor Django**
-
-```bash
 python manage.py runserver
 ```
 
-O backend estará rodando em `http://localhost:8000/`
-
-#### Configuração do Frontend
-
-1. **Instale as dependências Node.js**
+2. **Configuração do Frontend**
 
 ```bash
-npm install --legacy-peer-deps
+cd frontend
+pnpm install
+pnpm dev
 ```
 
-2. **Inicie o servidor de desenvolvimento Next.js**
+### 🛠️ Comandos Úteis de Desenvolvimento
 
 ```bash
-npm run dev
+# Iniciar ambiente
+make dev-start
+
+# Parar ambiente
+make dev-stop
+
+# Reset completo
+make dev-reset
+
+# Ver logs
+make logs
+
+# Shell do backend
+make shell-backend
+
+# Executar migrações
+make migrate
+
+# Ver todos os comandos
+make help
 ```
 
-O frontend estará rodando em `http://localhost:3000/`
+Para mais detalhes sobre desenvolvimento, veja [README-DEV.md](README-DEV.md).
 
 ## 🌐 Estrutura da Aplicação
 
@@ -110,21 +129,25 @@ styles/                 # CSS e arquivos de estilo
 ## 📱 Uso
 
 1. **Faça login na aplicação**
+
    - Use a conta de administrador pré-criada:
      - Usuário: `admin`
      - Senha: `admin123`
    - Ou crie um novo usuário através do admin do Django em `http://localhost:8000/admin/`
 
 2. **Painel**
+
    - Veja sua visão geral financeira
    - Acesse contas, transações e metas
 
 3. **Gerencie Contas**
+
    - Adicione novas contas
    - Deposite ou retire fundos
    - Veja o histórico de transações
 
 4. **Acompanhe Transações**
+
    - Registre receitas e despesas
    - Categorize transações
    - Filtre e pesquise no histórico de transações
@@ -178,4 +201,3 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo LICENSE para d
 ---
 
 Feito com ❤️ por JP
-

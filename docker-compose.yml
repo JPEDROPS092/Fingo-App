@@ -1,0 +1,76 @@
+version: "3.8"
+
+services:
+  # Backend Django (Desenvolvimento)
+  backend:
+    build:
+      context: .
+      target: backend-dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app/backend
+      - ./backend/db.sqlite3:/app/backend/db.sqlite3
+      - ./backend/media:/app/backend/media
+      - ./backend/staticfiles:/app/backend/staticfiles
+    environment:
+      - DEBUG=1
+      - DJANGO_SETTINGS_MODULE=finance_project.settings
+      - PYTHONPATH=/app/backend
+    restart: unless-stopped
+    command: python manage.py runserver 0.0.0.0:8000
+    working_dir: /app/backend
+    depends_on:
+      - postgres-dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend Next.js (Desenvolvimento)
+  frontend:
+    build:
+      context: .
+      target: frontend-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app/frontend
+      - /app/frontend/node_modules
+      - /app/frontend/.next
+    environment:
+      - NODE_ENV=development
+      - NEXT_TELEMETRY_DISABLED=1
+    restart: unless-stopped
+    command: pnpm dev
+    working_dir: /app/frontend
+
+  # PostgreSQL Database (Desenvolvimento)
+  postgres-dev:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: financeapp_dev
+      POSTGRES_USER: financeuser
+      POSTGRES_PASSWORD: financepass
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  # Redis para Cache (Desenvolvimento)
+  redis-dev:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_dev_data:/data
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:
