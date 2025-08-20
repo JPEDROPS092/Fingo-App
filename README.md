@@ -1,203 +1,200 @@
-# 💰 FinanceAPP - Sistema Moderno de Gestão Financeira
 
-![FinanceAPP](https://img.shields.io/badge/FinanceAPP-v1.0-blue)
-![Django](https://img.shields.io/badge/Django-4.2.5-green)
-![Next.js](https://img.shields.io/badge/Next.js-15.2.4-black)
-![React](https://img.shields.io/badge/React-19.0.0-blue)
-![License](https://img.shields.io/badge/License-MIT-yellow)
+# 💰 FinanceAPP - Modern Financial Management System
 
-Uma aplicação completa de gestão financeira com um elegante frontend em React/Next.js e um poderoso backend em Django REST API.
+![FinanceAPP](https://img.shields.io/badge/FinanceAPP-v1.0-blue)![Django](https://img.shields.io/badge/Django-4.2.5-green)![Next.js](https://img.shields.io/badge/Next.js-15.2.4-black)![React](https://img.shields.io/badge/React-19.0.0-blue)![License](https://img.shields.io/badge/License-MIT-yellow)
 
-## 🎯 Funcionalidades
+A complete financial management application featuring an elegant React/Next.js frontend and a powerful Django REST API backend.
 
-- 🏦 **Gestão de Contas**: Acompanhe várias contas financeiras (poupança, corrente, investimentos, dívidas)
-- 💸 **Acompanhamento de Transações**: Registre transações de entrada e saída com categorias
-- 🎯 **Metas Financeiras**: Defina e acompanhe o progresso em direção aos objetivos financeiros
-- 📊 **Análises no Painel**: Visualize dados financeiros e progresso
-- 🔐 **Autenticação de Usuários**: Login seguro e gerenciamento de contas
-- 🎨 **Modo Escuro/Claro**: Interface bonita com suporte a temas
-- 📱 **Design Responsivo**: Funciona em todos os dispositivos
+## 🎯 Features
 
-## 🚀 Início Rápido
+- 🏦 **Account Management**: Track multiple financial accounts (savings, checking, investments, debts)
+- 💸 **Transaction Tracking**: Log income and expense transactions with categories
+- 🎯 **Financial Goals**: Set and monitor progress toward your financial objectives
+- 📊 **Dashboard Analytics**: Visualize financial data and progress
+- 🔐 **User Authentication**: Secure login and account management
+- 🎨 **Dark/Light Mode**: Beautiful interface with theme support
+- 📱 **Responsive Design**: Works on all devices
 
-### 📋 Pré-requisitos
+## 🚀 Quick Start
 
-- Docker e Docker Compose
+### 📋 Prerequisites
+
+- Docker and Docker Compose
 - Git
 
-### 🔧 Opções de Instalação
+### 🔧 Installation Options
 
-#### 🐳 Opção 1: Docker (Recomendado para Desenvolvimento)
+#### 🐳 Option 1: Docker (Recommended for Development)
 
-1. **Clone o repositório**
+1.  **Clone the repository**
+
+    ```bash
+    git clone <your-repo-url>
+    cd Fingo-App
+    ```
+
+2.  **Start the development environment**
+
+    ```bash
+    ./dev-start.sh
+    # or
+    make dev-start
+    ```
+
+3.  **Access the application**
+
+    -   Frontend: http://localhost:3000
+    -   Backend: http://localhost:8000
+    -   Admin: http://localhost:8000/admin (admin/admin123)
+
+#### 🏠 Option 2: Local Installation
+
+1.  **Backend Setup**
+
+    ```bash
+    cd backend
+    pip install -r requirements.txt
+    python manage.py migrate
+    python manage.py runserver
+    ```
+
+2.  **Frontend Setup**
+
+    ```bash
+    cd frontend
+    pnpm install
+    pnpm dev
+    ```
+
+### 🛠️ Useful Development Commands
 
 ```bash
-git clone <your-repo-url>
-cd Fingo-App
-```
-
-2. **Inicie o ambiente de desenvolvimento**
-
-```bash
-./dev-start.sh
-# ou
+# Start environment
 make dev-start
-```
 
-3. **Acesse a aplicação**
-
-- Frontend: http://localhost:3000
-- Backend: http://localhost:8000
-- Admin: http://localhost:8000/admin (admin/admin123)
-
-#### 🏠 Opção 2: Instalação Local
-
-1. **Configuração do Backend**
-
-```bash
-cd backend
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
-```
-
-2. **Configuração do Frontend**
-
-```bash
-cd frontend
-pnpm install
-pnpm dev
-```
-
-### 🛠️ Comandos Úteis de Desenvolvimento
-
-```bash
-# Iniciar ambiente
-make dev-start
-
-# Parar ambiente
+# Stop environment
 make dev-stop
 
-# Reset completo
+# Full reset
 make dev-reset
 
-# Ver logs
+# View logs
 make logs
 
-# Shell do backend
+# Backend shell
 make shell-backend
 
-# Executar migrações
+# Run migrations
 make migrate
 
-# Ver todos os comandos
+# See all commands
 make help
 ```
 
-Para mais detalhes sobre desenvolvimento, veja [README-DEV.md](README-DEV.md).
+For more development details, see [README-DEV.md](README-DEV.md).
 
-## 🌐 Estrutura da Aplicação
+## 🌐 Application Structure
 
 ### Backend (Django)
 
 ```
 backend/
-├── accounts/           # Aplicativo de gestão de contas
-├── goals/              # Aplicativo de metas financeiras
-├── transactions/       # Aplicativo de transações e categorias
-├── finance_project/    # Configurações principais do projeto
-├── manage.py           # Script de gerenciamento Django
-└── db.sqlite3          # Banco de dados SQLite
+├── accounts/           # Account management app
+├── goals/              # Financial goals app
+├── transactions/       # Transactions and categories app
+├── finance_project/    # Main project settings
+├── manage.py           # Django management script
+└── db.sqlite3          # SQLite database
 ```
 
 ### Frontend (Next.js)
 
 ```
-app/                    # Páginas e rotas Next.js
-components/             # Componentes React
-├── kokonutui/          # Componentes de UI
-├── theme-provider.tsx  # Gerenciamento de temas
-└── auth-guard.tsx      # Proteção de autenticação
-lib/                    # Utilitários e serviços
-├── api.ts              # Serviço cliente de API
-├── authContext.tsx     # Contexto de autenticação
-└── utils.ts            # Funções auxiliares
-public/                 # Ativos estáticos
-styles/                 # CSS e arquivos de estilo
+app/                    # Next.js pages and routes
+components/             # React components
+├── kokonutui/          # UI components
+├── theme-provider.tsx  # Theme management
+└── auth-guard.tsx      # Authentication guard
+lib/                    # Utilities and services
+├── api.ts              # API client service
+├── authContext.tsx     # Authentication context
+└── utils.ts            # Helper functions
+public/                 # Static assets
+styles/                 # CSS and style files
 ```
 
-## 📱 Uso
+## 📱 Usage
 
-1. **Faça login na aplicação**
+1.  **Log in to the application**
 
-   - Use a conta de administrador pré-criada:
-     - Usuário: `admin`
-     - Senha: `admin123`
-   - Ou crie um novo usuário através do admin do Django em `http://localhost:8000/admin/`
+    -   Use the pre-created admin account:
+        -   User: `admin`
+        -   Password: `admin123`
+    -   Or create a new user through the Django admin at `http://localhost:8000/admin/`
 
-2. **Painel**
+2.  **Dashboard**
 
-   - Veja sua visão geral financeira
-   - Acesse contas, transações e metas
+    -   View your financial overview
+    -   Access accounts, transactions, and goals
 
-3. **Gerencie Contas**
+3.  **Manage Accounts**
 
-   - Adicione novas contas
-   - Deposite ou retire fundos
-   - Veja o histórico de transações
+    -   Add new accounts
+    -   Deposit or withdraw funds
+    -   View transaction history
 
-4. **Acompanhe Transações**
+4.  **Track Transactions**
 
-   - Registre receitas e despesas
-   - Categorize transações
-   - Filtre e pesquise no histórico de transações
+    -   Log income and expenses
+    -   Categorize transactions
+    -   Filter and search transaction history
 
-5. **Defina Metas Financeiras**
-   - Crie metas de poupança, investimento ou pagamento de dívidas
-   - Acompanhe o progresso
-   - Defina datas-alvo
+5.  **Set Financial Goals**
+    -   Create savings, investment, or debt-payoff goals
+    -   Track progress
+    -   Set target dates
 
-## 🔒 Documentação da API
+## 🔒 API Documentation
 
-O backend Django fornece documentação abrangente da API:
+The Django backend provides comprehensive API documentation:
 
-- **Swagger UI**: `http://localhost:8000/swagger/`
-- **ReDoc**: `http://localhost:8000/redoc/`
+-   **Swagger UI**: `http://localhost:8000/swagger/`
+-   **ReDoc**: `http://localhost:8000/redoc/`
 
-### Principais Endpoints da API
+### Key API Endpoints
 
-- **Autenticação**: `/api/token/`
-- **Contas**: `/api/accounts/`
-- **Transações**: `/api/transactions/`
-- **Categorias**: `/api/categories/`
-- **Metas**: `/api/goals/`
+-   **Authentication**: `/api/token/`
+-   **Accounts**: `/api/accounts/`
+-   **Transactions**: `/api/transactions/`
+-   **Categories**: `/api/categories/`
+-   **Goals**: `/api/goals/`
 
-## ⚙️ Desenvolvimento
+## ⚙️ Development
 
-### Desenvolvimento do Backend
+### Backend Development
 
-- **Criar migrações**: `python manage.py makemigrations`
-- **Aplicar migrações**: `python manage.py migrate`
-- **Executar testes**: `python manage.py test`
+-   **Create migrations**: `python manage.py makemigrations`
+-   **Apply migrations**: `python manage.py migrate`
+-   **Run tests**: `python manage.py test`
 
-### Desenvolvimento do Frontend
+### Frontend Development
 
-- **Construir para produção**: `npm run build`
-- **Iniciar servidor de produção**: `npm start`
-- **Verificar código**: `npm run lint`
+-   **Build for production**: `npm run build`
+-   **Start production server**: `npm start`
+-   **Lint code**: `npm run lint`
 
-## 📋 Arquivo de Requisitos
+## 📋 Requirements File
 
-Para conveniência, um arquivo `requirements.txt` está incluído no diretório backend com todas as dependências Python necessárias.
+For convenience, a `requirements.txt` file is included in the backend directory with all necessary Python dependencies.
 
-## 🤝 Contribuindo
+## 🤝 Contributing
 
-Contribuições são bem-vindas! Sinta-se à vontade para enviar um Pull Request.
+Contributions are welcome! Feel free to submit a Pull Request.
 
-## 📄 Licença
+## 📄 License
 
-Este projeto está licenciado sob a Licença MIT - veja o arquivo LICENSE para detalhes.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ---
 
-Feito com ❤️ por JP
+Made with ❤️ by JP
